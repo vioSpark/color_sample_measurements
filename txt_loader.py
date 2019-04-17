@@ -23,7 +23,7 @@ class TextFileLoader:
         self.df.columns = real_header
         # self.df=self.df.drop(['Wavelength(nm)'], axis=0)
         raise NotImplementedError('which column to select?')
-        self.df = self.df.select(2, axis=0)
+        self.df = self.df.loc[:,2]
 
     @staticmethod
     def interpolate(array_to_interpolate):
