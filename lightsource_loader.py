@@ -1,0 +1,12 @@
+import numpy as np
+import logging
+import datetime as dt
+import sys
+import pandas as pd
+import scipy as sc
+
+
+class LightSourceLoader:
+    def __init__(self, file_path='data/CIE_xyz_T_D65.xlsx'):
+        self.df = pd.read_excel(file_path, header=0)
+        asd = 5
