@@ -33,5 +33,10 @@ class ExcelLoader:
         return df
 
     def interpolate(self):
+        data = []
+
         for row in self.df.iterrows():
-            pc.interpolate(row[1][3:])
+            # [*pc.interpolate(pd.to_numeric(row[1][3:])),
+            # *row[1][1:2] (this is name), *row[1][2:3] (Gloss (SCI/SCE)), *row[1][0:1] (measurement number)]
+            data.append([*pc.interpolate(pd.to_numeric(row[1][3:])), *row[1][1:2], *row[1][2:3], *row[1][0:1]])
+        self.df = pd.DataFrame(data, columns=[*np.linspace(360, 740, 77), *['Name', 'Gloss', 'measurement number']])
