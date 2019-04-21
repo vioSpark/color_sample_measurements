@@ -34,7 +34,6 @@ class ExcelLoader:
 
     def interpolate(self):
         data = []
-
         for row in self.df.iterrows():
             # [*pc.interpolate(pd.to_numeric(row[1][3:])),
             # *row[1][1:2] (this is name), *row[1][2:3] (Gloss (SCI/SCE)), *row[1][0:1] (measurement number)]

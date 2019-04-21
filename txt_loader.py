@@ -6,6 +6,7 @@ import os
 import pandas as pd
 import scipy as sc
 import math
+import math_pieces as pc
 
 
 class TextFileLoader:
@@ -43,9 +44,3 @@ class TextFileLoader:
         real_header = row.iloc[1, :]
         row.columns = real_header
         return row.loc[3, :]
-
-    @staticmethod
-    def interpolate(array_to_interpolate):
-        xp = np.linspace(360, 740, 39)
-        x = np.linspace(360, 740, 77)
-        return np.interp(x, xp, array_to_interpolate)

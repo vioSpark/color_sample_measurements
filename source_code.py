@@ -14,8 +14,9 @@ el = ExcelLoader(['data/reflection_tests/test.xls', 'data/reflection_tests/test 
 el.interpolate()
 tl = TextFileLoader(['data/transmission_test/', 'data/transmission_test/'])
 ll = LightSourceLoader()
-fi_lambda = pd.DataFrame(index=el.df[['Name', 'Gloss']],
-                         columns=np.linspace(360, 740, 77))  # results are stored in this
-for row in el.df:
+fi_lambda = pd.DataFrame(columns=[*np.linspace(360, 740, 77), 'Name', 'Gloss',
+                                  'measurement number'])  # results are stored in this
+for row in el.df.iterrows():
+    # fi_lambda.append(row, sort=False)
     pass
 asd = 4
