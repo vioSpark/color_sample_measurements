@@ -10,6 +10,7 @@ import math_pieces as pc
 
 class ExcelLoader:
     def __init__(self, files, logsfolder='data/logs/log'):
+        """
         logging.basicConfig(filename=logsfolder + str(dt.datetime.now().strftime("%Y-%m-%d_%H-%M")) + '.txt',
                             filemode='w',
                             format='%(asctime)s.%(msecs)-3d\t%(name)-20s\t%(levelname)-8s\t%(message)s',
@@ -17,7 +18,7 @@ class ExcelLoader:
                             level=logging.DEBUG)
         self.log = logging.getLogger(__name__)
         self.log.debug("log started")
-
+        """
         self.df = pd.DataFrame()
         meas_number = 0
         for file in files:
