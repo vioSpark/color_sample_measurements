@@ -10,9 +10,10 @@ from txt_loader import TextFileLoader
 from external_sources_loader import ExternalSourcesLoader
 import math_pieces as pc
 
-el = ExcelLoader(['data/reflection_tests/test.xls', 'data/reflection_tests/test 2.xls'])
+el = ExcelLoader(
+    ['data/reflection_tests/test.xls', 'data/reflection_tests/test 2.xls', 'data/reflection_tests/test 3.xls'])
 el.interpolate()
-tl = TextFileLoader(['data/transmission_test/', 'data/transmission_test/'])
+tl = TextFileLoader(['data/transmission_test/', 'data/transmission_test/', 'data/transmission_test/'])
 esl = ExternalSourcesLoader()
 fi_lambda = pd.DataFrame(columns=[*np.linspace(360, 740, 77), 'Name', 'Gloss',
                                   'measurement number'])  # results are stored in this
@@ -34,6 +35,8 @@ for row in fi_lambda.iterrows():
     append_me = pc.calculate_xyz(esl, row[1][:-3])
     append_me = append_me + list(row[1][-3:].values)
     X_Y_Z_data.loc[len(X_Y_Z_data)] = append_me
+print('X, Y, Z done')
+
 L_a_b_data = pd.DataFrame(columns=['L', 'a', 'b', 'Name', 'Gloss', 'measurement number'])
 Xn, Yn, Zn = pc.calculate_xyz(esl, esl.light)[:3]
 for row in X_Y_Z_data.iterrows():
@@ -43,4 +46,23 @@ for row in X_Y_Z_data.iterrows():
     b = 200 * ((Y / Yn) ** (1 / 3) - (Z / Zn) ** (1 / 3))
     append_me = [L, a, b] + list(row[1][-3:].values)
     L_a_b_data.loc[len(L_a_b_data)] = append_me
+print('L, a, b done')
+
+names = set(L_a_b_data['Name'])
+delta = []
+for name in names:
+    # hardcoded SCE
+    mask = (L_a_b_data.Name == name) & (L_a_b_data.Gloss == 'SCE')
+    delta_Lab = (L_a_b_data[mask].sort_values('measurement number')).iloc[:, 0:3].diff()[1:]
+    diffs = list(delta_Lab.applymap(lambda x: x ** 2).sum(1).apply(np.sqrt))
+    diffs.extend([name, 'SCE'])
+    delta.append(diffs)
+
+    # hardcoded SCI
+    mask = (L_a_b_data.Name == name) & (L_a_b_data.Gloss == 'SCI')
+    delta_Lab = (L_a_b_data[mask].sort_values('measurement number')).iloc[:, 0:3].diff()[1:]
+    diffs = list(delta_Lab.applymap(lambda x: x ** 2).sum(1).apply(np.sqrt))
+    diffs.extend([name, 'SCI'])
+    delta.append(diffs)
+final_final_delta_master_values_v3 = pd.DataFrame(delta)
 raise NotImplementedError('remove the exception handling from fi_lambda!!!!4!4!4!4')
