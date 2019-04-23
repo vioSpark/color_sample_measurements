@@ -43,4 +43,4 @@ class TextFileLoader:
         row = pd.DataFrame(data, columns=None).drop([2, 5, 8], axis=1).T
         real_header = row.iloc[1, :]
         row.columns = real_header
-        return row.loc[3, :]
+        return row.loc[4, :]
