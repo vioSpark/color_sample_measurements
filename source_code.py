@@ -11,9 +11,12 @@ from external_sources_loader import ExternalSourcesLoader
 import math_pieces as pc
 
 el = ExcelLoader(
-    ['data/reflection_tests/test.xls', 'data/reflection_tests/test 2.xls', 'data/reflection_tests/test 3.xls'])
+    ['data/reflection_tests_2/SZIE_2019_01_23.xls', 'data/reflection_tests_2/SZIE_2019_02_27.xls',
+     'data/reflection_tests_2/SZIE_2019_03_13.xls', 'data/reflection_tests_2/SZIE_2019_03_27.xls',
+     'data/reflection_tests_2/SZIE_2019_04_24.xls', ])
 el.interpolate()
-tl = TextFileLoader(['data/transmission_test/', 'data/transmission_test/', 'data/transmission_test/'])
+tl = TextFileLoader(['data/transmission_test_2/1/', 'data/transmission_test_2/2/', 'data/transmission_test_2/3/',
+                     'data/transmission_test_2/4/', 'data/transmission_test_2/5/', ])
 esl = ExternalSourcesLoader()
 fi_lambda = pd.DataFrame(columns=[*np.linspace(360, 740, 77), 'Name', 'Gloss',
                                   'measurement number'])  # results are stored in this
