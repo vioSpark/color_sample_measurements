@@ -11,12 +11,10 @@ from external_sources_loader import ExternalSourcesLoader
 import math_pieces as pc
 
 el = ExcelLoader(
-    ['data/reflection_tests_2/SZIE_2019_01_23.xls', 'data/reflection_tests_2/SZIE_2019_02_27.xls',
-     'data/reflection_tests_2/SZIE_2019_03_13.xls', 'data/reflection_tests_2/SZIE_2019_03_27.xls',
-     'data/reflection_tests_2/SZIE_2019_04_24.xls', ])
+    ['data/final_export_partial/excel_folder/SZIE_2019_02_27.xls',
+     'data/final_export_partial/excel_folder/SZIE_2019_03_13.xls'])
 el.interpolate()
-tl = TextFileLoader(['data/transmission_test_2/1/', 'data/transmission_test_2/2/', 'data/transmission_test_2/3/',
-                     'data/transmission_test_2/4/', 'data/transmission_test_2/5/', ])
+tl = TextFileLoader(['data/final_export_partial/02.27/', 'data/final_export_partial/03.13/'])
 esl = ExternalSourcesLoader()
 fi_lambda = pd.DataFrame(columns=[*np.linspace(360, 740, 77), 'Name', 'Gloss',
                                   'measurement number'])  # results are stored in this
@@ -31,8 +29,31 @@ for row in el.df.iterrows():
     except KeyError as e:
         # !!!!!!!!!! change the commented line, to ignore inconsistencies !!!!!!!!!!
         # print(e)
-        raise e
-fi_lambda.to_csv()
+        try:
+            if e.args[0].find('ZS') >= 0:
+                tau = pd.to_numeric(
+                    tl.df.loc[tl.df['measurement number'] == row[1][-1]].loc[row[1][-3].replace('ZS', 'SZ')][:-1]) \
+                    .abs().values
+
+                spectral_values = (pd.to_numeric(
+                    row[1][:-3] * esl.light) * tau) / 10000  # the /10000 because of the percentages
+                fi_lambda = fi_lambda.append(spectral_values.append(row[1][-3:]), ignore_index=True)
+            if e.args[0].find('SZ') >= 0:
+                tau = pd.to_numeric(
+                    tl.df.loc[tl.df['measurement number'] == row[1][-1]].loc[row[1][-3].replace('SZ', 'ZS')][:-1]) \
+                    .abs().values
+
+                spectral_values = (pd.to_numeric(
+                    row[1][:-3] * esl.light) * tau) / 10000  # the /10000 because of the percentages
+                fi_lambda = fi_lambda.append(spectral_values.append(row[1][-3].replace('SZ', 'ZS')).append(row[1][-2:]), ignore_index=True)
+        except KeyError as ee:
+            print("you've really fucked it up this time, aren't you?")
+            print(ee)
+        if e.args[0][0] != '5' or e.args[0][0] != 'H':
+            pass
+        else:
+            raise e
+fi_lambda.to_csv('data/results/fi_lambda.csv')
 print('fi_lambda saved')
 
 X_Y_Z_data = pd.DataFrame(columns=['X', 'Y', 'Z', 'x', 'y', 'z', 'Name', 'Gloss', 'measurement number'])
@@ -41,7 +62,7 @@ for row in fi_lambda.iterrows():
     append_me = pc.calculate_xyz(esl, row[1][:-3])
     append_me = append_me + list(row[1][-3:].values)
     X_Y_Z_data.loc[len(X_Y_Z_data)] = append_me
-X_Y_Z_data.to_csv()
+X_Y_Z_data.to_csv('data/results/X_Y_Z_data.csv')
 print('X, Y, Z data saved')
 
 L_a_b_data = pd.DataFrame(columns=['L', 'a', 'b', 'Name', 'Gloss', 'measurement number'])
@@ -53,7 +74,7 @@ for row in X_Y_Z_data.iterrows():
     b = 200 * ((Y / Yn) ** (1 / 3) - (Z / Zn) ** (1 / 3))
     append_me = [L, a, b] + list(row[1][-3:].values)
     L_a_b_data.loc[len(L_a_b_data)] = append_me
-L_a_b_data.to_csv()
+L_a_b_data.to_csv('data/results/L_a_b_data.csv')
 print('L, a, b data saved')
 
 names = set(L_a_b_data['Name'])
@@ -73,5 +94,5 @@ for name in names:
     diffs.extend([name, 'SCI'])
     delta.append(diffs)
 final_final_delta_master_values_v3 = pd.DataFrame(delta)
-final_final_delta_master_values_v3.to_csv()
+final_final_delta_master_values_v3.to_csv('data/results/final_delta.csv')
 print('final delta values saved')
