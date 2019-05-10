@@ -16,7 +16,11 @@ ppt-t átdobhatjuk megnézésre (pár napos delay)
 """
 
 import numpy as np
+import logging
+import datetime as dt
+import sys
 import pandas as pd
+import scipy as sc
 
 
 class Transformer:
@@ -57,8 +61,12 @@ class Transformer:
                                 # name = res.loc['Name']
                                 delta_Lab = res.loc[:, 'L':'b'].diff().iloc[1:]
                                 diffs = list(delta_Lab.applymap(lambda x: x ** 2).sum(1).apply(np.sqrt))
-                                final.loc[index] = diffs + [rt_type[rt], gloss_type[gloss], color_type[color],
-                                                            water_type[water], temp_type[temp], meas_num]
+                                try:
+                                    final.loc[index] = diffs + [rt_type[rt], gloss_type[gloss], color_type[color],
+                                                                water_type[water], temp_type[temp], meas_num]
+                                except ValueError as e:
+                                    print(str(meas_num) + ' ' + str(temp_type[temp]) + str(water_type[water]) + str(
+                                        color_type[color]) + ' ' + str(rt_type[rt]) + ' ' + str(gloss_type[gloss]))
                                 index += 1
         """
         method for one:

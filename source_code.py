@@ -8,32 +8,44 @@ from txt_loader import TextFileLoader
 from visualiser import Transformer
 
 el = ExcelLoader(
-    ['data/final_export/excel_folder/SZIE_2018_11_15.xls'])
+    ['data/final_export/excel_folder/SZIE_2018_11_15.xls', 'data/final_export/excel_folder/SZIE_2018_11_30.xls',
+     'data/final_export/excel_folder/SZIE_2018_12_12.xls', 'data/final_export/excel_folder/SZIE_2019_01_11.xls',
+     'data/final_export/excel_folder/SZIE_2019_01_23.xls', 'data/final_export/excel_folder/SZIE_2019_02_27.xls',
+     'data/final_export/excel_folder/SZIE_2019_03_13.xls', 'data/final_export/excel_folder/SZIE_2019_03_27.xls',
+     'data/final_export/excel_folder/SZIE_2019_04_10.xls', 'data/final_export/excel_folder/SZIE_2019_04_24.xls'])
 el.interpolate()
 tl = TextFileLoader(
-    ['data/final_export/2018-11-15/'])
+    ['data/final_export/2018-11-15/', 'data/final_export/2018-11-30/', 'data/final_export/2018-12-12/',
+     'data/final_export/2019-01-11/', 'data/final_export/2019-01-23/', 'data/final_export/2019-02-27/',
+     'data/final_export/2019-03-13/', 'data/final_export/2019-03-27/', 'data/final_export/2019-04-10/',
+     'data/final_export/2019-04-24/'])
 esl = ExternalSourcesLoader()
 fi_lambda = pd.DataFrame(columns=[*np.linspace(360, 740, 77), 'Name', 'RT', 'Gloss',
                                   'measurement number'])  # results are stored in this
 # //R/T is added
 for row in el.df.iterrows():
-    # fi_lambda.append(row * tl.df.loc[row['Name']] * ll.df, sort=False)
+    # fi_lambda.append(row * tl.df.l oc[row['Name']] * ll.df, sort=False)
     try:
-        tau = tl.df.loc[tl.df['measurement number'] == row[1][-1]].loc[row[1][-3]][:-1].str.replace(',', '').astype(
+        # tau = tl.df.loc[tl.df['measurement number'] == row[1][-1]].loc[row[1][-3]][:-1].str.replace(',', '').astype(
+        #    float).abs().values
+        tau = tl.df.loc[tl.df['measurement number'] == row[1][-1]].loc[row[1][-3]][:-1].astype(
             float).abs().values
-        # tau = pd.to_numeric(tl.df.loc[tl.df['measurement number'] == row[1][-1]].loc[row[1][-3]][:-1]).abs().values
 
         spectral_values_1 = (pd.to_numeric(
             row[1][:-3] * esl.light)) / 100  # the /100 because of the percentages
-        spectral_values_2 = (esl.light * tau) / 100  # the /100 because of the percentages
+        try:
+            spectral_values_2 = (esl.light * tau) / 100  # the /100 because of the percentages
+        except ValueError:
+            print(str(row) + " (a DUPLICATE causing this problem in a very complicated way)")
+
         fi_lambda = fi_lambda.append(spectral_values_1.append(row[1][-3:]), ignore_index=True)
         fi_lambda.iloc[-1, -3] = 'Reflection'
         fi_lambda = fi_lambda.append(spectral_values_2.append(row[1][-3:]), ignore_index=True)
         fi_lambda.iloc[-1, -3] = 'Transmission'
-
+    except AttributeError as e:
+        asd = 5  # this line here is for debugging purposes
+        raise e
     except KeyError as e:
-        # !!!!!!!!!! change the commented line, to ignore inconsistencies !!!!!!!!!!
-        # print(e)
         try:
             if e.args[0].find('ZS') >= 0:
                 tau = pd.to_numeric(
@@ -52,11 +64,6 @@ for row in el.df.iterrows():
                     tl.df.loc[tl.df['measurement number'] == row[1][-1]].loc[row[1][-3].replace('SZ', 'ZS')][:-1]) \
                     .abs().values
 
-                # spectral_values = (pd.to_numeric(
-                #     row[1][:-3] * esl.light) * tau) / 10000  # the /10000 because of the percentages
-                # fi_lambda = fi_lambda.append(spectral_values.append(row[1][-3].replace('SZ', 'ZS')).append(row[1][-2:]),
-                #                              ignore_index=True)
-
                 spectral_values_1 = (pd.to_numeric(
                     row[1][:-3] * esl.light)) / 100  # the /100 because of the percentages
                 spectral_values_2 = (esl.light * tau) / 100  # the /100 because of the percentages
@@ -70,6 +77,7 @@ for row in el.df.iterrows():
         except KeyError as ee:
             print("you've ****** it up this time, a missing measurement:")
             print(ee)
+            print(row[-3:])
         if e.args[0][0] != '5' or e.args[0][0] != 'H':
             pass
         else:

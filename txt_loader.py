@@ -18,7 +18,7 @@ class TextFileLoader:
 
         files = os.scandir(path)
         for file in files:
-            df = df.append(self.read_file(file))
+            df = df.append(self.read_file(file).str.replace(',', '.'))
             index.append(str(file).split("'")[1].split('.')[0])
         df.index = index
         return df
@@ -36,5 +36,5 @@ class TextFileLoader:
             data.append(row.split('\t'))
         row = pd.DataFrame(data, columns=None).drop([2, 5, 8], axis=1).T
         real_header = row.iloc[1, :]
-        row.columns = real_header
+        row.columns = real_header.str.replace(',', '.')
         return row.loc[4, :]
