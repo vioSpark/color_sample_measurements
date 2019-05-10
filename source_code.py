@@ -1,15 +1,11 @@
 import numpy as np
-import logging
-import datetime as dt
-import sys
 import pandas as pd
-import scipy as sc
 
-from excel_loader import ExcelLoader
-from txt_loader import TextFileLoader
-from external_sources_loader import ExternalSourcesLoader
-from visualiser import Transformer
 import math_pieces as pc
+from excel_loader import ExcelLoader
+from external_sources_loader import ExternalSourcesLoader
+from txt_loader import TextFileLoader
+from visualiser import Transformer
 
 el = ExcelLoader(
     ['data/final_export/excel_folder/SZIE_2018_11_15.xls'])
@@ -141,4 +137,3 @@ final_final_delta_master_values_v3 = pd.DataFrame(delta)
 final_final_delta_master_values_v3.to_csv('data/results/final_delta.csv')
 print('final delta values saved')
 tr = Transformer(L_a_b_data)
-asd=6

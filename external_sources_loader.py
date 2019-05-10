@@ -1,9 +1,4 @@
-import numpy as np
-import logging
-import datetime as dt
-import sys
 import pandas as pd
-import scipy as sc
 
 
 class ExternalSourcesLoader:

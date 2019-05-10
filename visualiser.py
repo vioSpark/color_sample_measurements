@@ -16,11 +16,7 @@ ppt-t átdobhatjuk megnézésre (pár napos delay)
 """
 
 import numpy as np
-import logging
-import datetime as dt
-import sys
 import pandas as pd
-import scipy as sc
 
 
 class Transformer:
@@ -74,4 +70,3 @@ class Transformer:
         """
         final.to_csv('data/results/final_final.csv')
         print('final_final.csv saved')
-        asd = 6
