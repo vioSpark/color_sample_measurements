@@ -69,17 +69,8 @@ class Transformer:
                                     print(str(meas_num) + ' ' + str(temp_type[temp]) + str(water_type[water]) + str(
                                         color_type[color]) + ' ' + str(rt_type[rt]) + ' ' + str(gloss_type[gloss]))
                                 index += 1
-        """
-        method for one:
-        mask = (tmp.Gloss == 'SCI') & (tmp.RT == 'Reflection') & (tmp['measurement number'] == 0) & (
-                tmp['Temperature'] == '5') & (tmp['Water type'] == 'D') & (tmp['Color'] == 'P')
-        res = tmp.loc[mask]
-        delta_Lab = res.loc[:, 'L':'b']
-        diffs = list(delta_Lab.applymap(lambda x: x ** 2).sum(1).apply(np.sqrt))
-        """
-        avg, std = final.iloc[:10].mean(axis=1, numeric_only=True).rename('average'), \
-                   final.iloc[:10].std(axis=1, numeric_only=True).rename(
-                       'standard deviation')
+        avg, std = final.iloc[:, :10].mean(axis=1, numeric_only=True).rename('average'), \
+                   final.iloc[:, :10].std(axis=1, numeric_only=True).rename('standard deviation')
         final = pd.concat([final, avg, std], axis=1, join_axes=[final.index])
         final.to_csv('data/results/final_final.csv')
         print('final_final.csv saved')
