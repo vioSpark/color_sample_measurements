@@ -12,12 +12,10 @@ from visualiser import Transformer
 import math_pieces as pc
 
 el = ExcelLoader(
-    ['data/final_export_partial/excel_folder/SZIE_2019_02_27.xls',
-     'data/final_export_partial/excel_folder/SZIE_2019_03_13.xls',
-     'data/final_export_partial/excel_folder/SZIE_2019_04_24.xls'])
+    ['data/final_export/excel_folder/SZIE_2018_11_15.xls'])
 el.interpolate()
 tl = TextFileLoader(
-    ['data/final_export_partial/02.27/', 'data/final_export_partial/03.13/', 'data/final_export_partial/04.24/'])
+    ['data/final_export/2018-11-15/'])
 esl = ExternalSourcesLoader()
 fi_lambda = pd.DataFrame(columns=[*np.linspace(360, 740, 77), 'Name', 'RT', 'Gloss',
                                   'measurement number'])  # results are stored in this
@@ -25,7 +23,9 @@ fi_lambda = pd.DataFrame(columns=[*np.linspace(360, 740, 77), 'Name', 'RT', 'Glo
 for row in el.df.iterrows():
     # fi_lambda.append(row * tl.df.loc[row['Name']] * ll.df, sort=False)
     try:
-        tau = pd.to_numeric(tl.df.loc[tl.df['measurement number'] == row[1][-1]].loc[row[1][-3]][:-1]).abs().values
+        tau = tl.df.loc[tl.df['measurement number'] == row[1][-1]].loc[row[1][-3]][:-1].str.replace(',', '').astype(
+            float).abs().values
+        # tau = pd.to_numeric(tl.df.loc[tl.df['measurement number'] == row[1][-1]].loc[row[1][-3]][:-1]).abs().values
 
         spectral_values_1 = (pd.to_numeric(
             row[1][:-3] * esl.light)) / 100  # the /100 because of the percentages
@@ -141,3 +141,4 @@ final_final_delta_master_values_v3 = pd.DataFrame(delta)
 final_final_delta_master_values_v3.to_csv('data/results/final_delta.csv')
 print('final delta values saved')
 tr = Transformer(L_a_b_data)
+asd=6

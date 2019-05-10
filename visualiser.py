@@ -50,7 +50,7 @@ class Transformer:
                 for temp in range(2):
                     for water in range(3):
                         for color in range(2):
-                            for meas_num in range(measurements):
+                            for meas_num in range(measurements + 1):
                                 mask = (tmp.Gloss == gloss_type[gloss]) & \
                                        (tmp.RT == rt_type[rt]) & \
                                        (tmp.loc[:, 'Temperature'] == temp_type[temp]) & \
@@ -59,7 +59,7 @@ class Transformer:
                                        (tmp.loc[:, 'measurement number'] == meas_num)
                                 res = tmp.loc[mask]
                                 # name = res.loc['Name']
-                                delta_Lab = res.loc[:, 'L':'b']
+                                delta_Lab = res.loc[:, 'L':'b'].diff().iloc[1:]
                                 diffs = list(delta_Lab.applymap(lambda x: x ** 2).sum(1).apply(np.sqrt))
                                 final.loc[index] = diffs + [rt_type[rt], gloss_type[gloss], color_type[color],
                                                             water_type[water], temp_type[temp], meas_num]
@@ -73,4 +73,5 @@ class Transformer:
         diffs = list(delta_Lab.applymap(lambda x: x ** 2).sum(1).apply(np.sqrt))
         """
         final.to_csv('data/results/final_final.csv')
+        print('final_final.csv saved')
         asd = 6
