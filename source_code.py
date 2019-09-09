@@ -112,6 +112,7 @@ print('L, a, b data saved')
 
 names = set(L_a_b_data['Name'])
 delta = []
+delta_Lab_table=[]
 for name in names:
     # hardcoded SCE Transmission
     mask = (L_a_b_data.Name == name) & (L_a_b_data.Gloss == 'SCE') & (L_a_b_data.RT == 'Transmission')
@@ -119,6 +120,8 @@ for name in names:
     diffs = list(delta_Lab.applymap(lambda x: x ** 2).sum(1).apply(np.sqrt))
     diffs.extend([name, 'SCE', 'Transmission'])
     delta.append(diffs)
+    delta_Lab_table.extend([name, 'SCE', 'Transmission'])
+    delta_Lab_table.append(delta_Lab)
 
     # hardcoded SCE Reflection
     mask = (L_a_b_data.Name == name) & (L_a_b_data.Gloss == 'SCE') & (L_a_b_data.RT == 'Reflection')
@@ -126,6 +129,8 @@ for name in names:
     diffs = list(delta_Lab.applymap(lambda x: x ** 2).sum(1).apply(np.sqrt))
     diffs.extend([name, 'SCE', 'Reflection'])
     delta.append(diffs)
+    delta_Lab_table.extend([name, 'SCE', 'Reflection'])
+    delta_Lab_table.append(delta_Lab)
 
     # hardcoded SCI Transmission
     mask = (L_a_b_data.Name == name) & (L_a_b_data.Gloss == 'SCI') & (L_a_b_data.RT == 'Transmission')
@@ -133,6 +138,8 @@ for name in names:
     diffs = list(delta_Lab.applymap(lambda x: x ** 2).sum(1).apply(np.sqrt))
     diffs.extend([name, 'SCI', 'Transmission'])
     delta.append(diffs)
+    delta_Lab_table.extend([name, 'SCI', 'Transmission'])
+    delta_Lab_table.append(delta_Lab)
 
     # hardcoded SCI Reflection
     mask = (L_a_b_data.Name == name) & (L_a_b_data.Gloss == 'SCI') & (L_a_b_data.RT == 'Reflection')
@@ -140,7 +147,10 @@ for name in names:
     diffs = list(delta_Lab.applymap(lambda x: x ** 2).sum(1).apply(np.sqrt))
     diffs.extend([name, 'SCI', 'Reflection'])
     delta.append(diffs)
+    delta_Lab_table.extend([name, 'SCI', 'Reflection'])
+    delta_Lab_table.append(delta_Lab)
 
+pd.DataFrame(delta_Lab_table).to_csv('data/results/delta_L_a_b_data.csv')
 final_final_delta_master_values_v3 = pd.DataFrame(delta)
 final_final_delta_master_values_v3.to_csv('data/results/final_delta.csv')
 print('final delta values saved')
