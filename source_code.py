@@ -152,7 +152,7 @@ for name in names:
 
 pd.DataFrame(delta_Lab_table).to_csv('data/results/delta_L_a_b_data.csv')
 final_final_delta_master_values_v3 = pd.DataFrame(delta)
-final_final_delta_master_values_v3.to_csv('data/results/final_delta.csv')
+final_final_delta_master_values_v3.to_csv('data/results/deltaE_minta.csv')
 print('final delta values saved')
 tr = Transformer(L_a_b_data)
 final_results = tr.do_stuff()
