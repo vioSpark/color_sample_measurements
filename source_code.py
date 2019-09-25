@@ -38,9 +38,9 @@ for row in el.df.iterrows():
         except ValueError:
             print(str(row) + " (a DUPLICATE causing this problem in a very complicated way)")
 
-        fi_lambda = fi_lambda.append(spectral_values_1.append(row[1][-3:]), ignore_index=True)
+        fi_lambda = fi_lambda.append(spectral_values_1.append(row[1][-3:]), ignore_index=True, sort=True)
         fi_lambda.iloc[-1, -3] = 'Reflection'
-        fi_lambda = fi_lambda.append(spectral_values_2.append(row[1][-3:]), ignore_index=True)
+        fi_lambda = fi_lambda.append(spectral_values_2.append(row[1][-3:]), ignore_index=True, sort=True)
         fi_lambda.iloc[-1, -3] = 'Transmission'
     except AttributeError as e:
         asd = 5  # this line here is for debugging purposes
@@ -54,9 +54,9 @@ for row in el.df.iterrows():
                 spectral_values_1 = (pd.to_numeric(
                     row[1][:-3] * esl.light)) / 100  # the /100 because of the percentages
                 spectral_values_2 = (esl.light * tau) / 100  # the /100 because of the percentages
-                fi_lambda = fi_lambda.append(spectral_values_1.append(row[1][-3:]), ignore_index=True)
+                fi_lambda = fi_lambda.append(spectral_values_1.append(row[1][-3:]), ignore_index=True, sort=True)
                 fi_lambda.iloc[-1, -3] = 'Reflection'
-                fi_lambda = fi_lambda.append(spectral_values_2.append(row[1][-3:]), ignore_index=True)
+                fi_lambda = fi_lambda.append(spectral_values_2.append(row[1][-3:]), ignore_index=True, sort=True)
                 fi_lambda.iloc[-1, -3] = 'Transmission'
 
             if e.args[0].find('SZ') >= 0:
@@ -68,10 +68,10 @@ for row in el.df.iterrows():
                     row[1][:-3] * esl.light)) / 100  # the /100 because of the percentages
                 spectral_values_2 = (esl.light * tau) / 100  # the /100 because of the percentages
                 fi_lambda = fi_lambda.append(spectral_values_1.append(row[1][-3:].replace('SZ', 'ZS')),
-                                             ignore_index=True)
+                                             ignore_index=True, sort=True)
                 fi_lambda.iloc[-1, -3] = 'Reflection'
                 fi_lambda = fi_lambda.append(spectral_values_2.append(row[1][-3:].replace('SZ', 'ZS')),
-                                             ignore_index=True)
+                                             ignore_index=True, sort=True)
                 fi_lambda.iloc[-1, -3] = 'Transmission'
 
         except KeyError as ee:
@@ -112,7 +112,7 @@ print('L, a, b data saved')
 
 names = set(L_a_b_data['Name'])
 delta = []
-delta_Lab_table=[]
+delta_Lab_table = []
 for name in names:
     # hardcoded SCE Transmission
     mask = (L_a_b_data.Name == name) & (L_a_b_data.Gloss == 'SCE') & (L_a_b_data.RT == 'Transmission')
@@ -156,3 +156,20 @@ final_final_delta_master_values_v3.to_csv('data/results/deltaE_minta.csv')
 print('final delta values saved')
 tr = Transformer(L_a_b_data)
 final_results = tr.do_stuff()
+
+# okay, this is getting messy, but I accept the technological debt, since deadline is near
+L_a_b_data_transmission_only = L_a_b_data[(L_a_b_data.RT == 'Transmission') & (L_a_b_data.Gloss == 'SCI')]
+L_a_b_data_transmission_only.drop(['RT', 'Gloss'], axis=1, inplace=True)
+first_measurement = L_a_b_data_transmission_only[L_a_b_data_transmission_only['measurement number'] == 0].sort_values(
+    'measurement number')
+
+delta_Lab_since_first_measurement = []
+names = set(L_a_b_data_transmission_only['Name'])
+for name in names:
+    mask = L_a_b_data_transmission_only.Name == name
+    tmp = L_a_b_data_transmission_only[mask].sort_values('measurement number').iloc[:, 0:3]
+    diff_np_array = tmp.values - first_measurement[first_measurement.Name == name].iloc[:, 0:3].values
+    diffs=[name]
+    diffs.extend(list(pd.DataFrame(diff_np_array).applymap(lambda x: x ** 2).sum(1).apply(np.sqrt)))
+    delta_Lab_since_first_measurement.append(diffs)
+pd.DataFrame(delta_Lab_since_first_measurement).to_csv('data/results/deltaE_since_first_measurement.csv')
