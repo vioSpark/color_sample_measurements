@@ -20,21 +20,25 @@ import logging
 import datetime as dt
 import sys
 import pandas as pd
-import scipy as sc
+# import scipy as sc
 
 
 class Transformer:
     def __init__(self, L_a_b_data):
-        columns = list(L_a_b_data.columns.values) + ['Temperature', 'Water type', 'Color', 'Shade ID']
-        tmp = pd.concat([L_a_b_data, L_a_b_data.Name.str[:1], L_a_b_data.Name.str[1:2], L_a_b_data.Name.str[2:3],
-                         pd.DataFrame(np.nan, index=range(len(L_a_b_data)), columns=['A'])], axis=1)
+        self.L_a_b_data = L_a_b_data
+    # DO NOT MODIFY THIS, UNLESS YOU REWRITE THE MATLAB TECHNOLOGICAL DEBT IN "evaluation_3.m" !!!!!!!!!!!!!!!!!!!!!!!
+    def do_stuff(self):
+        columns = list(self.L_a_b_data.columns.values) + ['Temperature', 'Water type', 'Color', 'Shade ID']
+        tmp = pd.concat([self.L_a_b_data, self.L_a_b_data.Name.str[:1], self.L_a_b_data.Name.str[1:2],
+                         self.L_a_b_data.Name.str[2:3],
+                         pd.DataFrame(np.nan, index=range(len(self.L_a_b_data)), columns=['A'])], axis=1)
         tmp.columns = columns
-        # get the Shade ID-s fixed ... I have no ide why have I calculated this....
+        # get the Shade ID-s fixed ...
         tmp.update(pd.to_numeric(tmp[tmp['Color'] == 'P'].loc[:, 'Name'].str[3:].rename('Shade ID')))
         tmp.update(pd.to_numeric(tmp[tmp['Color'] == 'Z'].loc[:, 'Name'].str[4:].rename('Shade ID')))
         tmp.sort_values(by=['RT', 'Gloss', 'Color', 'Water type', 'Temperature', 'measurement number', 'Shade ID'],
                         inplace=True)
-
+        # DO NOT MODIFY THIS, UNLESS YOU REWRITE THE MATLAB TECHNOLOGICAL DEBT IN "evaluation_3.m" !!!!!!!!!!!!!!!!!!
         final = pd.DataFrame(
             columns=['1->2', '2->3', '3->4', '4->5', '5->6', '6->7', '7->8', '8->9', '9->10', '10->11', 'RT',
                      'Gloss', 'Color', 'Water type', 'Temperature', 'measurement number'])
@@ -45,6 +49,7 @@ class Transformer:
         water_type = ('+', 'D', 'M')
         color_type = ('P', 'Z')
         index = 0
+        # DO NOT MODIFY THIS, UNLESS YOU REWRITE THE MATLAB TECHNOLOGICAL DEBT IN "evaluation_3.m" !!!!!!!!!!!!!!!!!!
         for gloss in range(2):
             for rt in range(2):
                 for temp in range(2):
@@ -64,13 +69,17 @@ class Transformer:
                                 try:
                                     final.loc[index] = diffs + [rt_type[rt], gloss_type[gloss], color_type[color],
                                                                 water_type[water], temp_type[temp], meas_num]
-
+                                    # DO NOT MODIFY THIS,
+                                    # UNLESS YOU REWRITE THE MATLAB TECHNOLOGICAL DEBT IN "evaluation_3.m"
                                 except ValueError as e:
                                     print(str(meas_num) + ' ' + str(temp_type[temp]) + str(water_type[water]) + str(
                                         color_type[color]) + ' ' + str(rt_type[rt]) + ' ' + str(gloss_type[gloss]))
                                 index += 1
+        # DO NOT MODIFY THIS, UNLESS YOU REWRITE THE MATLAB TECHNOLOGICAL DEBT IN "evaluation_3.m" !!!!!!!!!!!!!!!!!!
         avg, std = final.iloc[:, :10].mean(axis=1, numeric_only=True).rename('average'), \
                    final.iloc[:, :10].std(axis=1, numeric_only=True).rename('standard deviation')
         final = pd.concat([final, avg, std], axis=1, join_axes=[final.index])
         final.to_csv('data/results/final_final.csv')
         print('final_final.csv saved')
+        return final
+        # DO NOT MODIFY THIS, UNLESS YOU REWRITE THE MATLAB TECHNOLOGICAL DEBT IN "evaluation_3.m" !!!!!!!!!!!!!!!!!!
