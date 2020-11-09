@@ -1,6 +1,6 @@
 # color_sample_measurements
-Measurement analisys program for the evaulation of measurements (collab project between BME and SZIE)
 
-The program calculates the 'delta'E from spectral measurements. It does a bunch of calculations mainly based on pandas, and python arrays.
+<b>read paper <a href="http://ojs.emt.ro/index.php/oget2020/article/view/168">here</a>
 
-TODO: upload process map, general optimalization
+Measurement analisys program for the evaulation of measurements (collaboration between <a href="http://www.bme.hu/">BME</a> and <a href="https://www.szie.hu/">SZIE</a>)
+The program calculates the ΔE from spectral measurements. Code is mainly based on pandas and python arrays.
